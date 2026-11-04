@@ -1,63 +1,67 @@
-# Programowanie Systemów Mobilnych — Kalkulator (Część 1)
+# Kalkulator Android (Jetpack Compose)
 
-Aplikacja mobilna kalkulatora z elastycznym interfejsem dla orientacji pionowej i poziomej (z funkcjami naukowymi), zbudowana od zera w **Android Studio Quail 4 (2026.1.4)** dla **Android 17 (API 37)** z wykorzystaniem **Jetpack Compose** i **Material 3 Design**.
+Projekt nowoczesnego, responsywnego kalkulatora stworzony w środowisku **Android Studio (Kotlin + Jetpack Compose)** w oparciu o wytyczne projektowe **Material Design 3**.
 
----
-
-## 📋 Cel Projektu i Zrealizowane Wymagania
-
-Projekt realizuje wytyczne z **Konspektu 4 (Kalkulator - część 1)**. Główne założenia i zrealizowane punkty obejmują:
-
-1. **Brak blokady orientacji (Zadanie 1):**
-   - Brak atrybutu `android:screenOrientation` w manifeście. Aplikacja płynnie dostosowuje się do obrotu ekranu w emulatorze oraz na urządzeniach typu tablet / składak (API 37 / targetSdk 37).
-
-2. **Układ pionowy i elastyczna siatka (Zadanie 2):**
-   - **Wyświetlacz:** Pole wyświetlające wyrażenie z wyrównaniem do prawej strony oraz obsługą przewijania poziomego (`horizontalScroll`), dzięki czemu długie wyrażenia nie znikają za krawędzią ekranu.
-   - **Siatka przycisków:** Skaluje się z rozmiarem ekranu bez sztywno wpisanych rozmiarów w `dp` (wykorzystanie `Modifier.weight`, `aspectRatio` oraz `Arrangement.spacedBy`).
-   - **Model danych przycisku:** Użycie klasy `CalcButton` oraz enumeracji `ButtonCategory`, pozwalające uniknąć powielania wywołań w kodzie.
-
-3. **Układ poziomy i tryb naukowy (Zadanie 3):**
-   - W orientacji poziomej (`ORIENTATION_LANDSCAPE`), obok podstawowego bloku kalkulatora odsłania się dodatkowy blok funkcji naukowych (`sin(`, `cos(`, `tan(`, `pi`, `sqrt(`, `^`, `ln(`, `e`).
-   - **Brak duplikacji kodu:** Zarówno blok podstawowy, jak i naukowy są budowane przez ten sam komponent `@Composable fun Keypad`, wywoływany z różnymi danymi.
-   - **Wpisywanie symboli:** Przycisk `pi` wpisuje nazwę stałej `pi`, a funkcje wpisują nazwę razem z nawiasem otwierającym (np. `sin(`), przygotowując aplikację pod przyszły silnik obliczeniowy w Części 2.
-
-4. **Własna kolorystyka i obsługa motywów (Zadanie 4):**
-   - Przygotowano własną, świadomie dobraną paletę barw w systemie Material 3 (`ui/theme/Color.kt` i `ui/theme/Theme.kt`).
-   - Wyraźne rozróżnienie wizualne ról przycisków (cyfry, operatory, akcje, przycisk równania `=`).
-   - Pełna obsługa trybu jasnego i ciemnego (**Light & Dark Theme**) z zachowaniem wytycznych dostępności WCAG 2.2 odnośnie kontrastu ($\ge 4.5:1$).
+Aplikacja powstała w ramach przedmiotu **Programowanie Systemów Mobilnych (Konspekt 4: Część 1)**.
 
 ---
 
-## 📝 Odpowiedzi do Sprawozdania
+## 📱 Zrzuty ekranu
 
-### 1. Dlaczego przycisk $\pi$ powinien wpisywać nazwę stałej, a nie liczbę 3,14159?
-Wpisywanie przybliżonej wartości liczbowej (np. `3.14159`) wprowadza wczesny błąd zaokrąglenia już na etapie budowania wyrażenia. Wpisywanie identyfikatora/symbolu stałej (`pi`) pozwala silnikowi obliczeniowemu (w Części 2) na użycie pełnej precyzji zmiennoprzecinkowej oferowanej przez system (np. `Math.PI` w typie `Double`) lub na przetwarzanie symboliczne, zapobiegając utracie dokładności przy złożonych obliczeniach.
+### Tryb ciemny (Dark Mode)
+|                            Orientacja pionowa (Portrait)                             |                             Orientacja pozioma (Landscape)                             |
+|:------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------:|
+| <img src="docs/screenshots/dark_portrait.png" width="300" alt="Dark Mode Portrait"/> | <img src="docs/screenshots/dark_landscape.png" width="550" alt="Dark Mode Landscape"/> |
 
-### 2. Uzasadnienie wyboru koloru bazowego i ról kolorystycznych
-Paleta barw została wygenerowana i dobrana w oparciu o stonowaną, nowoczesną tonację ciepłego brązu i beżu (*Warm Earth / Stone*):
-- **Cyfry (`NUMBER`):** Neutralny kontener powierzchniowy (`surfaceContainerHigh`), czytelny i niemęczący wzroku.
-- **Operatory (`OPERATOR`):** Ciepły brązowy odcień (`secondaryContainer`), pozwalający na szybkie odróżnienie działań od cyfr.
-- **Akcje (`ACTION` - np. `C`, `⌫`, nawiasy):** Jasny/ciemny stonowany beż (`tertiaryContainer`), podkreślający przyciski funkcyjne.
-- **Przycisk równości (`EQUALS`):** Akcentujący kolor pomarańczowy (`primary`), jednoznacznie wyróżniający kluczową akcję wykonania obliczenia.
-- Wybrany kolor bazowy zapewnia wysoki kontrast tekstu względem tła we wszystkich kategoriach oraz bezproblemowe przełączanie między motywem jasnym i ciemnym.
-
----
-
-## 🛠 Struktura Projektu i Główne Komponenty
-
-```text
-app/src/main/java/com/example/kalkulator/
-├── MainActivity.kt                # Główna aktywność i logika UI (CalculatorScreen, Keypad, Display, Button)
-└── ui/theme/
-    ├── Color.kt                   # Definicje barw dla trybu jasnego i ciemnego (Light & Dark ColorScheme)
-    └── Theme.kt                   # Konfiguracja KalkulatorTheme (Material3 Theme setup)
-```
+### Tryb jasny (Light Mode)
+|                             Orientacja pionowa (Portrait)                              |                              Orientacja pozioma (Landscape)                              |
+|:--------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------:|
+| <img src="docs/screenshots/light_portrait.png" width="300" alt="Light Mode Portrait"/> | <img src="docs/screenshots/light_landscape.png" width="550" alt="Light Mode Landscape"/> |
 
 ---
 
-## 🚀 Uruchomienie Projektu
+## ✨ Kluczowe cechy projektu
 
-1. Otwórz projekt w **Android Studio Quail 4 (2026.1.4)** lub nowszym.
-2. Zbuduj projekt korzystając z Gradle Sync / Build (`app`).
-3. Uruchom aplikację na emulatorze z Androidem 17 (API 37) lub na urządzeniu fizycznym.
-4. Przestaw orientację urządzenia/emulatora, aby przetestować przełączanie pomiędzy trybem pionowym (kalkulator podstawowy) i poziomym (kalkulator naukowy).
+1. **Responsywność i adaptacyjny układ (Adaptive Layout):**
+   - **Tryb pionowy:** Standardowy układ 4 kolumn i 5 wierszy (podstawowe działania arytmetyczne, nawiasy, czyszczenie i kasowanie).
+   - **Tryb poziomy:** Dodatkowy blok funkcji naukowych (`sin(`, `cos(`, `tan(`, `pi`, `sqrt(`, `^`, `ln(`, `e`) pojawia się po lewej stronie, bez duplikowania kodu bloku podstawowego.
+   - Płynne skalowanie elementów oparte na proporcjach wag (`Modifier.weight`) oraz elastycznych wymiarach – brak stałych wartości w pikselach czy sztywnych `dp` dla rozmiarów przycisków.
+
+2. **Obsługa długich wyrażeń (Overflow Handling):**
+   - Pole wprowadzania działania (`expression`) wyposażone w poziome przewijanie (`Modifier.horizontalScroll`).
+   - Automatyczne dociąganie widoku (`LaunchedEffect` + `animateScrollTo`) do ostatnio wprowadzonego znaku, gwarantujące czytelność bez rozpychania karty.
+
+3. **Autorska paleta barw (Material 3):**
+   - Świadomie zaprojektowany schemat kolorów oparty na wyrazistym kolorze wiodącym **`#FF8000`**.
+   - Wyraźna hierarchia wizualna dla poszczególnych ról:
+     - **Cyfry:** stonowane, ciemnografitowe / jasnopiaskowe tło.
+     - **Operatory (`+`, `-`, `×`, `÷`):** ciepły, ciemnobursztynowy akcent.
+     - **Akcje funkcyjne (`C`, `⌫`, nawiasy):** kontrastowa kość słoniowa.
+     - **Równa się (`=`):** żywy pomarańcz `#FF8000`.
+   - Pełna zgodność ze standardem dostępności **WCAG 2.2** (kontrast tekstu do tła $> 4.5:1$).
+   - Wyłączony `dynamicColor` w celu zachowania spójności motywu na urządzeniach z systemem Android 12+.
+
+4. **Architektura kodu:**
+   - Deklaratywny opis przycisków za pomocą struktur danych (`CalcButton`, `ButtonCategory`), minimalizujący powtórzenia kodu.
+   - Jednolity komponent `Keypad` reużywany dla klawiatury standardowej i naukowej.
+   - Zachowanie stanu wprowadzanego wyrażenia przy rekonfiguracji ekranu (`rememberSaveable`).
+   - Inteligentne usuwanie wieloznakowych prefiksów funkcji naukowych przyciskiem `⌫`.
+
+---
+
+## 📝 Odpowiedzi do sprawozdania (Konspekt 4)
+
+### 1. Dlaczego przycisk $\pi$ wpisuje nazwę stałej, a nie przybliżenie liczbowe `3.14159`?
+> Wpisanie wartości dziesiętnej `3.14159` powoduje natychmiastową utratę precyzji w obliczeniach zmiennoprzecinkowych z powodu akumulacji błędu zaokrąglenia. Zapisanie stałej w postaci symbolicznej `pi` umożliwia przyszłemu silnikowi obliczeniowemu (Część 2) podstawienie pełnej precyzji maszynowej podwójnej precyzji `Math.PI` (`Double`) lub zastosowanie uproszczeń algebraicznych (np. $\sin(\pi) = 0$ zamiast wyniku rzędu $\approx 10^{-6}$).
+
+### 2. Uzasadnienie wyboru koloru bazowego
+> Jako kolor bazowy wybrano wyrazisty odcień pomarańczowego (**`#FF8000`**), który pełni rolę kluczowego akcentu dla przycisku obliczenia wyniku (`=`). Pozostałym elementom przypisano stonowane, ciepłe barwy bursztynu i grafitu, co pozwoliło uzyskać czytelną hierarchię funkcji kalkulatora oraz wysoki kontrast czytelności tekstu (spełniający wytyczne WCAG 2.2) zarówno w motywie jasnym, jak i ciemnym.
+
+---
+
+## 🛠️ Technologie
+- **Język:** Kotlin
+- **UI Toolkit:** Jetpack Compose
+- **Design System:** Material Design 3 (M3)
+- **Min SDK:** API 24+
+- **Target SDK:** API 37
