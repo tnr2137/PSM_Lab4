@@ -4,31 +4,45 @@ import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.googlefonts.Font
+import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.unit.sp
 
-// Set of Material typography styles to start with
+val provider = GoogleFont.Provider(
+    providerAuthority = "com.google.android.gms.fonts",
+    providerPackage = "com.google.android.gms",
+    certificates = androidx.compose.ui.text.googlefonts.R.array.com_google_android_gms_fonts_certs
+)
+
+val JetBrainsMonoFont = GoogleFont("JetBrains Mono")
+
+val JetBrainsMonoFontFamily = FontFamily(
+    Font(googleFont = JetBrainsMonoFont, fontProvider = provider),
+    Font(googleFont = JetBrainsMonoFont, fontProvider = provider, weight = FontWeight.Medium),
+    Font(googleFont = JetBrainsMonoFont, fontProvider = provider, weight = FontWeight.Bold)
+)
+
 val Typography = Typography(
     bodyLarge = TextStyle(
-        fontFamily = FontFamily.Default,
+        fontFamily = JetBrainsMonoFontFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp
-    )
-    /* Other default text styles to override
-    titleLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 22.sp,
-        lineHeight = 28.sp,
-        letterSpacing = 0.sp
     ),
-    labelSmall = TextStyle(
-        fontFamily = FontFamily.Default,
+    bodyMedium = TextStyle(
+        fontFamily = JetBrainsMonoFontFamily,
+        fontWeight = FontWeight.Normal,
+        fontSize = 14.sp
+    ),
+    titleLarge = TextStyle(
+        fontFamily = JetBrainsMonoFontFamily,
         fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
+        fontSize = 28.sp
+    ),
+    labelLarge = TextStyle(
+        fontFamily = JetBrainsMonoFontFamily,
+        fontWeight = FontWeight.Medium,
+        fontSize = 20.sp
     )
-    */
 )

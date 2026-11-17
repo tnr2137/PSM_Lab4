@@ -2,6 +2,7 @@ package com.example.kalkulator
 
 import android.content.res.Configuration
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -40,7 +41,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.kalkulator.ui.theme.JetBrainsMonoFontFamily
 import com.example.kalkulator.ui.theme.KalkulatorTheme
+import org.mariuszgromada.math.mxparser.Expression
+import org.mariuszgromada.math.mxparser.License
 
 enum class ButtonCategory {
     NUMBER,
@@ -104,6 +108,7 @@ class MainActivity : ComponentActivity() {
     )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        License.iConfirmNonCommercialUse("Filip Turczyn")
         enableEdgeToEdge()
         setContent {
             KalkulatorTheme() {
@@ -116,11 +121,44 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        for(key in outState.keySet()) {
+            Log.d("Wyrazenie", "Klucz: $key Wartosc: ${outState.get(key)}")
+        }
+    }
+}
+
+fun calculateExpression(expression: String): String {
+    if(expression.isBlank()) return ""
+
+    val formatted = expression.replace('×', '*')
+        .replace('÷', '/')
+        .replace(',','.')
+
+    if (formatted.last() in listOf('+', '-', '*', '/', '^', '.', '(')) return ""
+
+    val mathExpression = Expression(formatted)
+    if(!mathExpression.checkSyntax()) return ""
+
+    val result = Expression(formatted).calculate()
+    if(result.isNaN()) return "Błąd"
+
+    val resultString = if(result % 1.0 == 0.0) {
+        result.toLong().toString()
+    } else {
+        result.toString()
+    }
+
+    return resultString.replace('.',',')
 }
 
 @Composable
 fun CalculatorScreen(basicButtonRows: List<List<CalcButton>>, scientificButtonRows: List<List<CalcButton>>) {
     var expression by rememberSaveable { mutableStateOf("") }
+    var result by rememberSaveable { mutableStateOf("") }
 
     val onButtonClick: (String) -> Unit = { symbol ->
         when (symbol) {
@@ -137,7 +175,7 @@ fun CalculatorScreen(basicButtonRows: List<List<CalcButton>>, scientificButtonRo
                 }
             }
             "=" -> {
-                // tudududu: dopisać logike
+                result = calculateExpression(expression)
             }
             else -> {
                 expression += symbol
@@ -153,7 +191,7 @@ fun CalculatorScreen(basicButtonRows: List<List<CalcButton>>, scientificButtonRo
     ) {
         CalculatorDisplay(
             expression = expression,
-            result = "Result",
+            result = result,
             modifier = Modifier.weight(if (isLandscape) 0.45f else 1f)
         )
 
@@ -242,7 +280,8 @@ fun CalculatorButton(btn: CalcButton, modifier: Modifier = Modifier, onClick: ()
             text = btn.symbol,
             fontSize = 20.sp,
             color = contentColor,
-            fontWeight = FontWeight.Medium
+            fontWeight = FontWeight.Medium,
+            fontFamily = JetBrainsMonoFontFamily
         )
     }
 }
@@ -277,6 +316,7 @@ fun CalculatorDisplay(expression: String, result: String, modifier: Modifier = M
                     fontSize = 28.sp,
                     color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Medium,
+                    fontFamily = JetBrainsMonoFontFamily,
                     maxLines = 1
                 )
             }
@@ -288,7 +328,8 @@ fun CalculatorDisplay(expression: String, result: String, modifier: Modifier = M
                 Text(
                     text = result,
                     fontSize = 20.sp,
-                    color = MaterialTheme.colorScheme.outline
+                    color = MaterialTheme.colorScheme.outline,
+                    fontFamily = JetBrainsMonoFontFamily
                 )
             }
         }
